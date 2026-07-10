@@ -1,17 +1,18 @@
 // Employee Copilot — app-shell offline cache.
 // Bump the version string whenever index.html/styles.css/app.js change
 // so clients pick up the new files instead of stale cached ones.
-var CACHE_VERSION = 'employee-copilot-v1';
+var CACHE_VERSION = 'employee-copilot-v3';
 
 var APP_SHELL = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js',
-  '../shared/data.js',
-  './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+  '/pwa',
+  '/employee-copilot-pwa/index.html',
+  '/employee-copilot-pwa/styles.css',
+  '/employee-copilot-pwa/app.js',
+  '/shared/data.js',
+  '/shared/i18n.js',
+  '/employee-copilot-pwa/manifest.webmanifest',
+  '/employee-copilot-pwa/icons/icon-192.png',
+  '/employee-copilot-pwa/icons/icon-512.png'
 ];
 
 self.addEventListener('install', function (event) {
