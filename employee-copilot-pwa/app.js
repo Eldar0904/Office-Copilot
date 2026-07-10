@@ -306,10 +306,20 @@
       state.agentListening = false; updateAgentUI(); return;
     }
     _recognition = new SR();
-    _recognition.lang = 'en-US'; _recognition.interimResults = false; _recognition.maxAlternatives = 1;
+    _recognition.lang = 'en-US'; _recognition.continuous = true; _recognition.interimResults = false; _recognition.maxAlternatives = 1;
     _recognition.onstart  = function() { state.agentListening = true; updateAgentUI(); };
-    _recognition.onresult = function(ev) { state.agentListening = false; updateAgentUI(); sendAgentMessage(ev.results[0][0].transcript, true); };
-    _recognition.onerror = _recognition.onend = function() { state.agentListening = false; updateAgentUI(); };
+    _recognition.onresult = function(ev) {
+      var transcript = ev.results[ev.results.length - 1][0].transcript.trim();
+      if (!transcript) return;
+      _recognition.stop();
+      state.agentListening = false; updateAgentUI();
+      sendAgentMessage(transcript, true);
+    };
+    _recognition.onerror = function(ev) {
+      if (ev.error === 'no-speech') { if (state.agentListening) { try { _recognition.start(); } catch(_){} } return; }
+      state.agentListening = false; updateAgentUI();
+    };
+    _recognition.onend = function() { if (!state.agentListening) updateAgentUI(); };
     _recognition.start();
   }
 

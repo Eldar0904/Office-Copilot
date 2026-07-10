@@ -966,23 +966,32 @@
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   var recognition = SpeechRecognition ? new SpeechRecognition() : null;
   if (recognition) {
-    recognition.continuous = false;
+    recognition.continuous = true;   // stay open — don't drop on silence
     recognition.interimResults = false;
     recognition.lang = 'en-US';
 
     recognition.onresult = function (e) {
-      var transcript = e.results[0][0].transcript;
+      // grab the latest final result
+      var transcript = e.results[e.results.length - 1][0].transcript.trim();
+      if (!transcript) return;
+      // stop listening while agent thinks / speaks
+      recognition.stop();
       state.agentListening = false;
       updateOrbUI();
       sendAgentMessage(transcript, true);  // voice in → speak back
     };
-    recognition.onerror = function () {
+    recognition.onerror = function (e) {
+      if (e.error === 'no-speech') {
+        // browser timed out with no speech — restart if still meant to listen
+        if (state.agentListening) { try { recognition.start(); } catch(_){} }
+        return;
+      }
       state.agentListening = false;
       updateOrbUI();
     };
     recognition.onend = function () {
-      state.agentListening = false;
-      updateOrbUI();
+      // only update UI if we didn't intentionally stop
+      if (!state.agentListening) updateOrbUI();
     };
   }
 
