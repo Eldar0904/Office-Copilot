@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employee Copilot — Web</title>
+<meta name="description" content="Your daily work hub — tasks, weekly planner, and team messages in one place.">
+<link rel="icon" href="../employee-copilot-pwa/icons/icon-192.png" sizes="192x192">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="web-shell" id="webApp">
+
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="ws-icon">EC</div>
+      <div class="ws-name">Employee Copilot</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Tasks</div>
+        <div class="nav-item" data-action="selectView" data-view="today">
+          <svg class="nav-icon" width="16" height="16" viewBox="0 0 22 22" fill="none"><rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.9"/><path d="M7 1.5V4.5M15 1.5V4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 11H11M6 15H9" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+          <span>Today</span>
+          <span class="nav-badge" id="todayNavBadge"></span>
+        </div>
+        <div class="nav-item" data-action="selectView" data-view="week">
+          <svg class="nav-icon" width="16" height="16" viewBox="0 0 22 22" fill="none"><rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.9"/><path d="M7 1.5V4.5M15 1.5V4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 10H16M6 14H12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+          <span>This Week</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Channels</div>
+        <div id="sidebarChannels"></div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Direct Messages</div>
+        <div id="sidebarDMs"></div>
+      </div>
+    </nav>
+
+    <!-- always-visible profile section -->
+    <div class="sidebar-footer">
+      <div class="profile-row">
+        <div class="profile-avatar" id="profileAvatar"><span class="status-dot"></span></div>
+        <div class="profile-meta">
+          <div class="profile-name" id="profileName"></div>
+          <div class="profile-role" id="profileRole"></div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-value" id="statDone"></div>
+          <div class="profile-stat-label">Done</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-value" id="statPending"></div>
+          <div class="profile-stat-label">Pending</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-value" id="statWeek"></div>
+          <div class="profile-stat-label">Week</div>
+        </div>
+      </div>
+      <div class="profile-settings" id="profileSettings"></div>
+      <div id="langSwitcher"></div>
+    </div>
+  </aside>
+
+  <!-- ══════════════════ MAIN PANE ══════════════════ -->
+  <main class="main-pane">
+    <header class="main-topbar">
+      <div class="topbar-icon" id="topbarIcon"></div>
+      <div class="topbar-title-wrap">
+        <div class="topbar-title" id="topbarTitle"></div>
+        <div class="topbar-sub" id="topbarSub"></div>
+      </div>
+      <!-- Notification bell -->
+      <div class="notif-bell-wrap">
+        <button class="notif-bell-btn" data-action="toggleNotifPanel" title="Notifications">
+          <svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M11 2a7 7 0 00-7 7v4l-1.5 2.5h17L18 13V9a7 7 0 00-7-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="notif-badge hidden" id="notifBadge">0</span>
+        </button>
+        <div class="notif-panel hidden" id="notifPanel"></div>
+      </div>
+
+      <button class="ai-topbar-btn" id="aiTopbarBtn" data-action="toggleAIPanel" title="Open Copilot">
+        <div class="ai-topbar-orb"></div>
+        <span>Copilot</span>
+      </button>
+      <div class="topbar-search-wrap" id="searchWrap">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="#8a9bb0" stroke-width="2"/><path d="M13 13L17 17" stroke="#8a9bb0" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="searchInput" class="search-input" type="text" placeholder="Search tasks &amp; messages…" autocomplete="off">
+        <div class="search-dropdown hidden" id="searchDropdown"></div>
+      </div>
+    </header>
+
+    <div class="main-content" id="mainContent"></div>
+  </main>
+
+  <!-- ══════════════════ AI ASSISTANT PANEL ══════════════════ -->
+  <aside class="ai-panel hidden" id="aiPanel">
+    <div class="ai-panel-head">
+      <div class="ai-panel-title-wrap">
+        <div class="ai-panel-orb"></div>
+        <span class="ai-panel-title">Copilot</span>
+      </div>
+      <div class="ai-panel-close" data-action="closeAIPanel">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="#4f5158" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <!-- Tab switcher -->
+    <div class="ai-panel-tabs">
+      <button class="ai-panel-tab active" data-action="switchAITab" data-tab="assistant">Assistant</button>
+      <button class="ai-panel-tab" data-action="switchAITab" data-tab="agent">🎙️ Voice Agent</button>
+    </div>
+
+    <!-- Agent pane -->
+    <div class="agent-pane hidden" id="agentPane">
+      <div class="agent-messages" id="agentMessages"></div>
+      <div class="agent-bubble agent hidden" id="agentThinking" style="margin:0 16px 0;">
+        <span>●</span><span style="animation:fadeIn .5s .2s both">●</span><span style="animation:fadeIn .5s .4s both">●</span>
+      </div>
+      <div class="agent-voice-area">
+        <div class="agent-orb" id="agentOrb" data-action="toggleAgentMic">
+          <svg class="agent-orb-icon" width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <rect x="9" y="2" width="6" height="12" rx="3" stroke="white" stroke-width="2"/>
+            <path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="agent-status" id="agentStatus">Tap to speak</div>
+        <div class="agent-text-row">
+          <input id="agentTextInput" class="agent-text-input" type="text" placeholder="Or type a request…" autocomplete="off">
+          <button class="agent-text-send" data-action="sendAgentText" title="Send">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M14 8L9 3M14 8L9 13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-panel-body" id="aiPanelBody">
+
+      <!-- Briefing card -->
+      <div class="ai-section">
+        <div class="ai-section-label">Today's Briefing</div>
+        <div class="ai-briefing-card" id="aiBriefing"></div>
+      </div>
+
+      <!-- Priority suggestions -->
+      <div class="ai-section">
+        <div class="ai-section-label">Suggested Focus</div>
+        <div id="aiSuggestions"></div>
+      </div>
+
+      <!-- Message drafter -->
+      <div class="ai-section">
+        <div class="ai-section-label">Draft a Message</div>
+        <div class="ai-draft-wrap">
+          <textarea id="aiDraftInput" class="ai-draft-input" placeholder="e.g. tell finance the budget report is ready…" rows="2"></textarea>
+          <button class="ai-draft-btn" data-action="aiDraft">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z"/></svg>
+            Generate
+          </button>
+        </div>
+        <div class="ai-draft-result hidden" id="aiDraftResult">
+          <div class="ai-draft-text" id="aiDraftText"></div>
+          <div class="ai-draft-actions">
+            <button class="ai-draft-copy" data-action="aiDraftCopy">Copy</button>
+            <button class="ai-draft-send" data-action="aiDraftSend">Send to chat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="ai-section">
+        <div class="ai-section-label">Quick Actions</div>
+        <div class="ai-actions-grid" id="aiActionsGrid"></div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ══════════════════ THREAD PANEL ══════════════════ -->
+  <aside class="thread-panel hidden" id="threadPanel">
+    <div class="thread-panel-head">
+      <div class="thread-panel-title-wrap">
+        <svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 1C4.58 1 1 4.13 1 8c0 1.77.67 3.39 1.78 4.67L2 17l4.33-.78A8.4 8.4 0 009 17c4.42 0 8-3.13 8-7s-3.58-7-8-7z" stroke="var(--blue)" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        <span class="thread-panel-title">Thread</span>
+      </div>
+      <div class="thread-close" data-action="closeThread">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="#4f5158" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="thread-original" id="threadOriginalMsg"></div>
+    <div class="thread-divider-row">
+      <span class="thread-reply-count" id="threadReplyCount"></span>
+      <div class="thread-divider-line"></div>
+    </div>
+    <div class="thread-messages" id="threadMessages"></div>
+    <div class="thread-composer">
+      <textarea id="threadInput" class="thread-input" placeholder="Reply in thread…" rows="1"></textarea>
+      <button class="thread-send-btn" data-action="sendThreadMsg" title="Send reply (Enter)">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M14 8L9 3M14 8L9 13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════ TASK DETAIL PANEL ══════════════════ -->
+  <aside class="detail-panel hidden" id="detailPanel">
+    <div class="detail-panel-head">
+      <div class="detail-panel-title">Task</div>
+      <div class="detail-close" data-action="closeTaskDetail">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" oke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="detail-priority-bar" id="td-priorityBar"></div>
+    <div class="detail-task-title" id="td-title"></div>
+    <div class="detail-tags">
+      <div class="tag tag-dept" id="td-dept"></div>
+      <div class="tag tag-neutral" id="td-due"></div>
+      <div class="tag" id="td-priority"></div>
+    </div>
+    <div class="detail-btn-primary" id="td-toggleBtn" data-action="toggleActiveTask"></div>
+  </aside>
+
+  <!-- ══════════════════ CREATE CHANNEL MODAL ══════════════════ -->
+  <div class="modal-overlay hidden" id="createChannelModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <span class="modal-title">Create a Channel</span>
+        <button class="modal-close" data-action="closeCreateChannel">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="#4f5158" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label class="modal-label">Channel name</label>
+          <input id="newChannelName" class="modal-input" type="text" placeholder="e.g. design-team" autocomplete="off" maxlength="40">
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">Emoji (optional)</label>
+          <input id="newChannelEmoji" class="modal-input" type="text" placeholder="e.g. 🎨" maxlength="4" style="width:80px;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn-secondary" data-action="closeCreateChannel">Cancel</button>
+        <button class="modal-btn-primary" data-action="submitCreateChannel">Create Channel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

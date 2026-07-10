@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Copilot — README</title>
+<style>
+  /* ── base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #1a2530;
+    background: #fff;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  /* ── headings ── */
+  h1 {
+    font-size: 28px; font-weight: 800; color: #0b3a6b; letter-spacing: -0.5px;
+    border-bottom: 3px solid #0b5389; padding-bottom: 12px; margin-bottom: 16px;
+  }
+  h2 {
+    font-size: 18px; font-weight: 700; color: #0b3a6b;
+    border-bottom: 1.5px solid #e0e8f0; padding-bottom: 8px;
+    margin: 40px 0 16px;
+  }
+  h3 {
+    font-size: 14.5px; font-weight: 700; color: #223545;
+    margin: 28px 0 10px;
+  }
+
+  /* ── prose ── */
+  p { margin-bottom: 12px; color: #2a3a48; }
+  hr { border: none; border-top: 1.5px solid #e8edf2; margin: 32px 0; }
+
+  strong { color: #0b3a6b; }
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    font-size: 12.5px; background: #f0f4f8; color: #c0392b;
+    padding: 1px 5px; border-radius: 4px;
+  }
+
+  /* ── code / pre blocks ── */
+  pre {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    background: #f6f8fa;
+    border: 1px solid #dde3ea;
+    border-left: 3px solid #0b5389;
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    color: #1e2d3a;
+    white-space: pre;
+  }
+
+  /* ── table ── */
+  table {
+    width: 100%; border-collapse: collapse; margin: 12px 0 24px;
+    font-size: 13.5px;
+  }
+  th {
+    background: #0b5389; color: #fff; font-weight: 700;
+    padding: 9px 14px; text-align: left;
+  }
+  th:first-child { border-radius: 8px 0 0 0; }
+  th:last-child  { border-radius: 0 8px 0 0; }
+  td { padding: 8px 14px; border-bottom: 1px solid #e8edf2; color: #2a3a48; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  /* ── design decisions list ── */
+  .decision {
+    background: #f6f8fa; border: 1px solid #dde3ea;
+    border-left: 3px solid #4fb3e8;
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;
+  }
+  .decision strong { display: block; font-size: 13.5px; color: #0b3a6b; margin-bottom: 4px; }
+  .decision p { margin: 0; font-size: 13px; color: #3a4a58; }
+
+  /* ── intro lead ── */
+  .lead {
+    font-size: 15px; color: #3a5068; line-height: 1.75;
+    background: #eef5fc; border-radius: 10px; padding: 14px 18px;
+    margin-bottom: 8px;
+  }
+
+  /* ── section label ── */
+  .section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: #8aa0b8; margin-bottom: 6px;
+  }
+
+  /* ── print ── */
+  @media print {
+    body { padding: 20px 28px; font-size: 13px; max-width: 100%; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 15px; margin: 28px 0 12px; }
+    h3 { font-size: 13px; }
+    pre { font-size: 10.5px; padding: 12px 14px; page-break-inside: avoid; }
+    .decision { page-break-inside: avoid; }
+    table { font-size: 12px; page-break-inside: avoid; }
+    h2 { page-break-after: avoid; }
+    h3 { page-break-after: avoid; }
+    .no-break { page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Employee Copilot</h1>
+
+<p class="lead">
+  A zero-dependency, offline-capable work hub built in vanilla JS. Two surfaces — a <strong>desktop web app</strong> (Slack-style) and a <strong>mobile PWA</strong> — that share the same data layer and stay in sync through a single localStorage key.
+</p>
+
+<hr>
+
+<h2>Architecture</h2>
+
+<div class="section-label">Folder structure</div>
+<pre>AI copilot/
+├── shared/
+│   └── data.js              ← single source of truth
+├── employee-copilot-web/    ← desktop Slack-style app
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
+└── employee-copilot-pwa/    ← mobile PWA
+    ├── index.html
+    ├── app.js
+    ├── styles.css
+    ├── service-worker.js
+    └── manifest.webmanifest</pre>
+
+<h3>How the pieces connect</h3>
+<pre>┌─────────────────────────────────────────────────────────────────┐
+│                         Browser / Device                        │
+│                                                                 │
+│   ┌──────────────────────┐      ┌──────────────────────────┐   │
+│   │  employee-copilot-   │      │  employee-copilot-pwa/   │   │
+│   │  web/  (desktop)     │      │  (mobile PWA)            │   │
+│   │                      │      │                          │   │
+│   │  index.html          │      │  index.html              │   │
+│   │  styles.css          │      │  styles.css              │   │
+│   │  app.js              │      │  app.js                  │   │
+│   │                      │      │  service-worker.js       │   │
+│   │  3-column Slack UI   │      │  manifest.webmanifest    │   │
+│   │  sidebar / main /    │      │  tab-based mobile UI     │   │
+│   │  detail panel        │      │  installable offline     │   │
+│   └──────────┬───────────┘      └────────────┬─────────────┘   │
+│              │  window.CopilotData            │                 │
+│              └──────────────┬─────────────────┘                 │
+│                             │                                   │
+│               ┌─────────────▼─────────────┐                    │
+│               │     shared/data.js         │                    │
+│               │                            │                    │
+│               │  Mock tasks, channels,     │                    │
+│               │  DMs, chat history         │                    │
+│               │  Color maps (dept/priority)│                    │
+│               │  Date/week helpers         │                    │
+│               │  enrichTask() pure fn      │                    │
+│               │  loadPersisted()           │                    │
+│               │  persist()                 │                    │
+│               └─────────────┬─────────────┘                    │
+│                             │                                   │
+│               ┌─────────────▼─────────────┐                    │
+│               │  localStorage              │                    │
+│               │  key: employeeCopilot.v1   │                    │
+│               │                            │                    │
+│               │  {                         │                    │
+│               │    completedTasks: {},     │                    │
+│               │    extraTasks: [],         │                    │
+│               │    nextId: 13,             │                    │
+│               │    activeTab: 'today'      │                    │
+│               │  }                         │                    │
+│               └────────────────────────────┘                    │
+└─────────────────────────────────────────────────────────────────┘</pre>
+
+<h3>Data flow</h3>
+<pre>User action (click / keypress)
+        │
+        ▼
+Event delegation  ──  document.addEventListener('click')
+  (data-action attr)       single listener, no per-element handlers
+        │
+        ▼
+   setState(patch)
+        │
+        ├──▶  Object.assign(state, patch)
+        │
+        ├──▶  CD.persist({ completedTasks, extraTasks, nextId, activeTab })
+        │         └──▶  localStorage.setItem('employeeCopilot.v1', JSON)
+        │
+        └──▶  render()
+                  ├── renderSidebarNav()
+                  ├── renderSidebarChannels()
+                  ├── renderSidebarDMs()
+                  ├── renderProfile()
+                  ├── renderTopbarAndContent()
+                  │       ├── renderTodayContent()   (activeView = 'today')
+                  │       ├── renderWeekContent()    (activeView = 'week')
+                  │       └── renderChatContent()    (activeChat != null)
+                  └── renderDetailPanel()</pre>
+
+<h3>PWA offline strategy (mobile only)</h3>
+<pre>  Request
+     │
+     ▼
+Cache match?
+  ├── YES ──▶ return cached, fetch update in background
+  └── NO  ──▶ fetch from network
+                  ├── success ──▶ return + update cache
+                  └── fail    ──▶ return cached (offline fallback)</pre>
+
+<hr>
+
+<h2>Key design decisions</h2>
+
+<div class="decision">
+  <strong>Shared data module</strong>
+  <p><code>shared/data.js</code> exposes <code>window.CopilotData</code>. Both apps load it first, so they always agree on task IDs, color maps, and the storage schema. No API, no build step, no drift.</p>
+</div>
+
+<div class="decision">
+  <strong>Single localStorage key</strong>
+  <p>Both apps read and write <code>employeeCopilot.v1</code> with the same JSON shape. Completing a task in the web app is immediately reflected when the mobile app next reads state.</p>
+</div>
+
+<div class="decision">
+  <strong>No framework, no bundler</strong>
+  <p>Vanilla JS with a global <code>state</code> object and a <code>setState → persist → render</code> cycle. The entire render is a synchronous string-concat → <code>innerHTML</code> swap. Fast, debuggable, zero dependencies.</p>
+</div>
+
+<div class="decision">
+  <strong>Event delegation</strong>
+  <p>One <code>click</code> listener on <code>document</code>, dispatched via <code>data-action</code> attributes. No per-element listeners to clean up, no memory leaks across re-renders.</p>
+</div>
+
+<div class="decision">
+  <strong><code>enrichTask()</code> pure function</strong>
+  <p>Takes a raw task + <code>completedTasks</code> map, returns display-ready fields (colors, done state, AI priority flag). Both apps call the same function, so styling is always consistent.</p>
+</div>
+
+<hr>
+
+<h2>Running locally</h2>
+
+<p>No build step required — open the files directly in a browser.</p>
+
+<p><strong>Desktop web app:</strong></p>
+<pre>open employee-copilot-web/index.html</pre>
+
+<p><strong>Mobile PWA</strong> (needs a local server for the service worker):</p>
+<pre>cd "AI copilot"
+npx serve .          # or python3 -m http.server 8080
+# open http://localhost:8080/employee-copilot-pwa/</pre>
+
+<p>To install as a PWA: open in Chrome/Edge on mobile → browser menu → "Add to Home Screen".</p>
+
+<hr>
+
+<h2>Pushing to Git</h2>
+
+<p>Initialize a repo at the <strong>root</strong> (<code>AI copilot/</code>), not inside a sub-folder — both apps reference <code>../shared/data.js</code> and need to live in the same repo.</p>
+
+<pre>cd "C:\Users\&lt;you&gt;\Documents\Claude\Projects\AI copilot"
+git init
+git add .
+git commit -m "Initial commit — Employee Copilot web + mobile"
+git remote add origin https://github.com/&lt;you&gt;/&lt;repo&gt;.git
+git push -u origin main</pre>
+
+<hr>
+
+<h2>Tech stack at a glance</h2>
+
+<table>
+  <thead>
+    <tr><th>Layer</th><th>Web app</th><th>Mobile PWA</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>UI</td><td>Vanilla JS + innerHTML</td><td>Vanilla JS + innerHTML</td></tr>
+    <tr><td>Styling</td><td>CSS variables, Flexbox</td><td>CSS variables, Flexbox</td></tr>
+    <tr><td>State</td><td>Global <code>state</code> object</td><td>Global <code>state</code> object</td></tr>
+    <tr><td>Persistence</td><td><code>shared/data.js</code> → localStorage</td><td><code>shared/data.js</code> → localStorage</td></tr>
+    <tr><td>Offline</td><td>—</td><td>Service Worker (cache-first)</td></tr>
+    <tr><td>Install</td><td>Browser tab</td><td>PWA / Add to Home Screen</td></tr>
+    <tr><td>Build</td><td>None</td><td>None</td></tr>
+    <tr><td>Dependencies</td><td>None</td><td>None</td></tr>
+  </tbody>
+</table>
+
+</body>
+</html>

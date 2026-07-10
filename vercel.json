@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/pwa/:path*", "destination": "/employee-copilot-pwa/:path*" },
+    { "source": "/pwa",        "destination": "/employee-copilot-pwa/index.html" },
+    { "source": "/web/:path*", "destination": "/employee-copilot-web/:path*" },
+    { "source": "/web",        "destination": "/employee-copilot-web/index.html" },
+    { "source": "/",           "destination": "/index.html" }
+  ]
+}
