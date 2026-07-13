@@ -21,25 +21,25 @@
 
     <nav class="sidebar-nav">
       <div class="nav-section">
-        <div class="nav-section-title">Tasks</div>
+        <div class="nav-section-title" data-i18n="nav_tasks">Tasks</div>
         <div class="nav-item" data-action="selectView" data-view="today">
           <svg class="nav-icon" width="16" height="16" viewBox="0 0 22 22" fill="none"><rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.9"/><path d="M7 1.5V4.5M15 1.5V4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 11H11M6 15H9" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-          <span>Today</span>
+          <span data-i18n="nav_today">Today</span>
           <span class="nav-badge" id="todayNavBadge"></span>
         </div>
         <div class="nav-item" data-action="selectView" data-view="week">
           <svg class="nav-icon" width="16" height="16" viewBox="0 0 22 22" fill="none"><rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.9"/><path d="M7 1.5V4.5M15 1.5V4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 10H16M6 14H12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-          <span>This Week</span>
+          <span data-i18n="nav_week">This Week</span>
         </div>
       </div>
 
       <div class="nav-section">
-        <div class="nav-section-title">Channels</div>
+        <div class="nav-section-title" data-i18n="nav_channels">Channels</div>
         <div id="sidebarChannels"></div>
       </div>
 
       <div class="nav-section">
-        <div class="nav-section-title">Direct Messages</div>
+        <div class="nav-section-title" data-i18n="nav_dms">Direct Messages</div>
         <div id="sidebarDMs"></div>
       </div>
     </nav>
@@ -56,15 +56,15 @@
       <div class="profile-stats">
         <div class="profile-stat">
           <div class="profile-stat-value" id="statDone"></div>
-          <div class="profile-stat-label">Done</div>
+          <div class="profile-stat-label" data-i18n="stat_done">Done</div>
         </div>
         <div class="profile-stat">
           <div class="profile-stat-value" id="statPending"></div>
-          <div class="profile-stat-label">Pending</div>
+          <div class="profile-stat-label" data-i18n="stat_pending">Pending</div>
         </div>
         <div class="profile-stat">
           <div class="profile-stat-value" id="statWeek"></div>
-          <div class="profile-stat-label">Week</div>
+          <div class="profile-stat-label" data-i18n="stat_week">Week</div>
         </div>
       </div>
       <div class="profile-settings" id="profileSettings"></div>
@@ -117,8 +117,8 @@
 
     <!-- Tab switcher -->
     <div class="ai-panel-tabs">
-      <button class="ai-panel-tab active" data-action="switchAITab" data-tab="assistant">Assistant</button>
-      <button class="ai-panel-tab" data-action="switchAITab" data-tab="agent">🎙️ Voice Agent</button>
+      <button class="ai-panel-tab active" data-action="switchAITab" data-tab="assistant" data-i18n="tab_assistant">Assistant</button>
+      <button class="ai-panel-tab" data-action="switchAITab" data-tab="agent" data-i18n="tab_voice_agent">🎙️ Voice Agent</button>
     </div>
 
     <!-- Agent pane -->
@@ -135,9 +135,9 @@
             <line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
-        <div class="agent-status" id="agentStatus">Tap to speak</div>
+        <div class="agent-status" id="agentStatus" data-i18n="agent_tap_speak">Tap to speak</div>
         <div class="agent-text-row">
-          <input id="agentTextInput" class="agent-text-input" type="text" placeholder="Or type a request…" autocomplete="off">
+          <input id="agentTextInput" class="agent-text-input" type="text" placeholder="Or type a request…" data-i18n-ph="agent_type_placeholder" autocomplete="off">
           <button class="agent-text-send" data-action="sendAgentText" title="Send">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M14 8L9 3M14 8L9 13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
@@ -149,19 +149,19 @@
 
       <!-- Briefing card -->
       <div class="ai-section">
-        <div class="ai-section-label">Today's Briefing</div>
+        <div class="ai-section-label" data-i18n="ai_briefing_title">Today's Briefing</div>
         <div class="ai-briefing-card" id="aiBriefing"></div>
       </div>
 
       <!-- Priority suggestions -->
       <div class="ai-section">
-        <div class="ai-section-label">Suggested Focus</div>
+        <div class="ai-section-label" data-i18n="ai_suggested_title">Suggested Focus</div>
         <div id="aiSuggestions"></div>
       </div>
 
       <!-- Message drafter -->
       <div class="ai-section">
-        <div class="ai-section-label">Draft a Message</div>
+        <div class="ai-section-label" data-i18n="ai_draft_title">Draft a Message</div>
         <div class="ai-draft-wrap">
           <textarea id="aiDraftInput" class="ai-draft-input" placeholder="e.g. tell finance the budget report is ready…" rows="2"></textarea>
           <button class="ai-draft-btn" data-action="aiDraft">
@@ -180,7 +180,7 @@
 
       <!-- Quick actions -->
       <div class="ai-section">
-        <div class="ai-section-label">Quick Actions</div>
+        <div class="ai-section-label" data-i18n="ai_quick_title">Quick Actions</div>
         <div class="ai-actions-grid" id="aiActionsGrid"></div>
       </div>
 

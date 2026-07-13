@@ -884,12 +884,12 @@
 
     if (state.activeView === 'week') {
       icon.innerHTML = '<svg width="15" height="15" viewBox="0 0 22 22" fill="none"><rect x="2" y="3" width="18" height="16" rx="3" stroke="white" stroke-width="1.9"/><path d="M7 1.5V4.5M15 1.5V4.5" stroke="white" stroke-width="1.9" stroke-linecap="round"/><path d="M6 10H16M6 14H12" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>';
-      document.getElementById('topbarTitle').textContent = 'This Week';
+      document.getElementById('topbarTitle').textContent = CI.t('topbar_week');
       document.getElementById('topbarSub').textContent = fmtRange();
       content.innerHTML = renderWeekContent();
     } else {
       icon.innerHTML = '<svg width="15" height="15" viewBox="0 0 22 22" fill="none"><rect x="2" y="3" width="18" height="16" rx="3" stroke="white" stroke-width="1.9"/><path d="M7 1.5V4.5M15 1.5V4.5" stroke="white" stroke-width="1.9" stroke-linecap="round"/><path d="M6 11H11M6 15H9" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>';
-      document.getElementById('topbarTitle').textContent = 'Today';
+      document.getElementById('topbarTitle').textContent = CI.t('topbar_today');
       document.getElementById('topbarSub').textContent = WEEKDAY_FULL[TODAY_INDEX] + ', ' + MONTH_FULL[TODAY.getMonth()] + ' ' + TODAY.getDate();
       content.innerHTML = renderTodayContent();
       if (state.showQuickAdd) {
@@ -1196,9 +1196,9 @@
     var status = document.getElementById('agentStatus');
     if (!orb || !status) return;
     orb.className = 'agent-orb';
-    if (state.agentListening) { orb.classList.add('listening'); status.textContent = 'Listening…'; status.className = 'agent-status active'; }
-    else if (state.agentThinking) { orb.classList.add('thinking'); status.textContent = 'Thinking…'; status.className = 'agent-status active'; }
-    else if (state.agentSpeaking) { orb.classList.add('speaking'); status.textContent = 'Speaking…'; status.className = 'agent-status active'; }
+    if (state.agentListening) { orb.classList.add('listening'); status.textContent = CI.t('agent_listening'); status.className = 'agent-status active'; }
+    else if (state.agentThinking) { orb.classList.add('thinking'); status.textContent = CI.t('agent_thinking'); status.className = 'agent-status active'; }
+    else if (state.agentSpeaking) { orb.classList.add('speaking'); status.textContent = CI.t('agent_speaking'); status.className = 'agent-status active'; }
     else { status.textContent = recognition ? 'Tap to speak' : 'Type below'; status.className = 'agent-status'; }
   }
 
@@ -1344,6 +1344,7 @@
     renderAIPanel();
     var ls = document.getElementById('langSwitcher');
     if (ls) ls.innerHTML = CI.langSwitcherHTML();
+    CI.applyI18n();
   }
 
   /* ───────────────────────── search ───────────────────────── */

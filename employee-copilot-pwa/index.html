@@ -54,23 +54,23 @@
     <!-- ── MESSAGES ── -->
     <section id="screen-messages" class="screen hidden">
       <header class="screen-header">
-        <div class="header-title" style="margin-top:2px;">Messages</div>
+        <div class="header-title" style="margin-top:2px;" data-i18n="tab_messages">Messages</div>
         <div class="search-box">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#a6a6a6" stroke-width="1.6"/><path d="M9.5 9.5L12.5 12.5" stroke="#a6a6a6" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <span>Search messages</span>
+          <span data-i18n="search_placeholder">Search messages</span>
         </div>
       </header>
       <div class="screen-scroll" style="padding:0 20px 84px;">
         <div style="padding-top:14px;">
-          <div class="list-label">Channels</div>
+          <div class="list-label" data-i18n="nav_channels">Channels</div>
           <div id="channelList"></div>
           <div class="add-channel-row" data-action="openCreateChannel">
             <div class="add-channel-icon">+</div>
-            <div class="add-channel-label">Add a channel</div>
+            <div class="add-channel-label" data-i18n="add_channel">Add a channel</div>
           </div>
         </div>
         <div style="padding-top:20px;">
-          <div class="list-label">Direct Messages</div>
+          <div class="list-label" data-i18n="nav_dms">Direct Messages</div>
           <div id="dmList"></div>
         </div>
       </div>
@@ -157,7 +157,7 @@
         <path d="M6 11H11M6 15H9" stroke-width="1.9" stroke-linecap="round"/>
         <circle cx="16" cy="15" r="2.5" data-today-dot stroke-width="1.5"/>
       </svg>
-      <div class="tab-label" data-tab-label="today">Today</div>
+      <div class="tab-label" data-tab-label="today" data-i18n="tab_today">Today</div>
     </div>
     <div class="tab-item" data-action="selectTab" data-tab="week">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" class="tab-icon" data-tab-icon="week">
@@ -165,21 +165,21 @@
         <path d="M7 1.5V4.5M15 1.5V4.5" stroke-width="1.9" stroke-linecap="round"/>
         <path d="M6 10H16M6 14H12" stroke-width="1.9" stroke-linecap="round"/>
       </svg>
-      <div class="tab-label" data-tab-label="week">Week</div>
+      <div class="tab-label" data-tab-label="week" data-i18n="tab_week">Week</div>
     </div>
     <div class="tab-item" data-action="selectTab" data-tab="messages" style="position:relative;">
       <div class="unread-dot hidden" id="unreadDot"></div>
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" class="tab-icon" data-tab-icon="messages">
         <path d="M20 13a2 2 0 01-2 2H6l-4 4V4a2 2 0 012-2h14a2 2 0 012 2v9z" stroke-width="1.9" stroke-linejoin="round"/>
       </svg>
-      <div class="tab-label" data-tab-label="messages">Messages</div>
+      <div class="tab-label" data-tab-label="messages" data-i18n="tab_messages">Messages</div>
     </div>
     <div class="tab-item" data-action="selectTab" data-tab="me">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" class="tab-icon" data-tab-icon="me">
         <circle cx="11" cy="7" r="3.5" stroke-width="1.9"/>
         <path d="M3 20c0-4 3.582-7 8-7s8 3 8 7" stroke-width="1.9" e-linecap="round"/>
       </svg>
-      <div class="tab-label" data-tab-label="me">Me</div>
+      <div class="tab-label" data-tab-label="me" data-i18n="tab_me">Me</div>
     </div>
   </nav>
 

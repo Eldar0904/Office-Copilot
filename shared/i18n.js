@@ -65,6 +65,7 @@
       other_tasks: 'Other tasks',
       todays_tasks: "Today's tasks",
       add_task: 'Add a task',
+      add_channel: 'Add a channel',
       add_task_placeholder: 'Add a task for today…',
       add_btn: 'Add',
       cancel_btn: 'Cancel',
@@ -127,6 +128,33 @@
 
       /* quick add (web) */
       quick_add_placeholder: 'New task…',
+
+      /* agent / voice */
+      tab_assistant: 'Assistant',
+      tab_voice_agent: '🎙️ Voice Agent',
+      agent_tap_speak: 'Tap to speak',
+      agent_listening: 'Listening…',
+      agent_thinking: 'Thinking…',
+      agent_speaking: 'Speaking…',
+      agent_type_placeholder: 'Or type a request…',
+
+      /* notifications */
+      notif_title: 'Notifications',
+      notif_clear: 'Clear all',
+      notif_empty: 'No notifications',
+
+      /* create channel */
+      create_channel_title: 'Create a Channel',
+      create_channel_name: 'Channel name',
+      create_channel_emoji: 'Emoji (optional)',
+      create_channel_submit: 'Create Channel',
+
+      /* thread */
+      thread_tap_reply: 'Reply in thread…',
+
+      /* topbar */
+      topbar_today: 'Today',
+      topbar_week: 'This Week',
     },
 
     kk: {
@@ -183,6 +211,7 @@
       other_tasks: 'Басқа тапсырмалар',
       todays_tasks: 'Бүгінгі тапсырмалар',
       add_task: 'Тапсырма қосу',
+      add_channel: 'Арна қосу',
       add_task_placeholder: 'Бүгінге тапсырма қосу…',
       add_btn: 'Қосу',
       cancel_btn: 'Болдырмау',
@@ -245,6 +274,33 @@
 
       /* quick add (web) */
       quick_add_placeholder: 'Жаңа тапсырма…',
+
+      /* agent / voice */
+      tab_assistant: 'Көмекші',
+      tab_voice_agent: '🎙️ Дауыс агенті',
+      agent_tap_speak: 'Сөйлеу үшін түртіңіз',
+      agent_listening: 'Тыңдауда…',
+      agent_thinking: 'Ойлауда…',
+      agent_speaking: 'Сөйлеуде…',
+      agent_type_placeholder: 'Немесе сұрауды теріңіз…',
+
+      /* notifications */
+      notif_title: 'Хабарламалар',
+      notif_clear: 'Барлығын тазалау',
+      notif_empty: 'Хабарламалар жоқ',
+
+      /* create channel */
+      create_channel_title: 'Арна құру',
+      create_channel_name: 'Арна атауы',
+      create_channel_emoji: 'Эмодзи (міндетті емес)',
+      create_channel_submit: 'Арна құру',
+
+      /* thread */
+      thread_tap_reply: 'Тармаққа жауап беру…',
+
+      /* topbar */
+      topbar_today: 'Бүгін',
+      topbar_week: 'Осы апта',
     },
 
     ru: {
@@ -301,6 +357,7 @@
       other_tasks: 'Другие задачи',
       todays_tasks: 'Задачи на сегодня',
       add_task: 'Добавить задачу',
+      add_channel: 'Добавить канал',
       add_task_placeholder: 'Добавить задачу на сегодня…',
       add_btn: 'Добавить',
       cancel_btn: 'Отмена',
@@ -363,6 +420,33 @@
 
       /* quick add (web) */
       quick_add_placeholder: 'Новая задача…',
+
+      /* agent / voice */
+      tab_assistant: 'Ассистент',
+      tab_voice_agent: '🎙️ Голосовой агент',
+      agent_tap_speak: 'Нажмите, чтобы говорить',
+      agent_listening: 'Слушаю…',
+      agent_thinking: 'Думаю…',
+      agent_speaking: 'Говорю…',
+      agent_type_placeholder: 'Или введите запрос…',
+
+      /* notifications */
+      notif_title: 'Уведомления',
+      notif_clear: 'Очистить всё',
+      notif_empty: 'Нет уведомлений',
+
+      /* create channel */
+      create_channel_title: 'Создать канал',
+      create_channel_name: 'Название канала',
+      create_channel_emoji: 'Эмодзи (необязательно)',
+      create_channel_submit: 'Создать канал',
+
+      /* thread */
+      thread_tap_reply: 'Ответить в ветке…',
+
+      /* topbar */
+      topbar_today: 'Сегодня',
+      topbar_week: 'Эта неделя',
     }
   };
 
@@ -660,6 +744,28 @@
     '</div>';
   }
 
+  /* Walk the DOM and update every element with data-i18n / data-i18n-ph */
+  function applyI18n() {
+    // text content
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      var val = t(key);
+      if (val !== key) el.textContent = val;
+    });
+    // placeholder attributes
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-ph');
+      var val = t(key);
+      if (val !== key) el.placeholder = val;
+    });
+    // title attributes
+    document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-title');
+      var val = t(key);
+      if (val !== key) el.title = val;
+    });
+  }
+
   /* ═══════════════════════════════════════════════════════════════
      EXPORT
   ═══════════════════════════════════════════════════════════════ */
@@ -678,6 +784,7 @@
     threadMsgText: threadMsgText,
     settingLabel: settingLabel,
     aiDraft: aiDraft,
-    langSwitcherHTML: langSwitcherHTML
+    langSwitcherHTML: langSwitcherHTML,
+    applyI18n: applyI18n
   };
 })();

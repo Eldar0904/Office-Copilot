@@ -295,7 +295,7 @@
     var orb = document.getElementById('agentOrbPwa'), status = document.getElementById('agentStatusPwa');
     if (!orb) return;
     orb.className = 'agent-orb-pwa' + (state.agentListening ? ' listening' : '') + (state.agentSpeaking ? ' speaking' : '') + (state.agentThinking ? ' thinking' : '');
-    if (status) status.textContent = state.agentListening ? 'Listening…' : state.agentSpeaking ? 'Speaking…' : state.agentThinking ? 'Thinking…' : 'Tap to speak';
+    if (status) status.textContent = state.agentListening ? CI.t('agent_listening') : state.agentSpeaking ? CI.t('agent_speaking') : state.agentThinking ? CI.t('agent_thinking') : CI.t('agent_tap_speak');
   }
 
   function toggleAgentMic() {
@@ -306,7 +306,8 @@
       state.agentListening = false; updateAgentUI(); return;
     }
     _recognition = new SR();
-    _recognition.lang = 'en-US'; _recognition.continuous = true; _recognition.interimResults = false; _recognition.maxAlternatives = 1;
+    _recognition.lang = CI.getLang() === 'ru' ? 'ru-RU' : CI.getLang() === 'kk' ? 'kk-KZ' : 'en-US';
+    _recognition.continuous = true; _recognition.interimResults = false; _recognition.maxAlternatives = 1;
     _recognition.onstart  = function() { state.agentListening = true; updateAgentUI(); };
     _recognition.onresult = function(ev) {
       var transcript = ev.results[ev.results.length - 1][0].transcript.trim();
@@ -503,6 +504,8 @@
       var ls = document.getElementById('langSwitcherPwa');
       if (ls) ls.innerHTML = CI.langSwitcherHTML();
     }
+
+    CI.applyI18n();
 
     /* CHAT */
     if (inChat) {
