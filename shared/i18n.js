@@ -671,4 +671,120 @@
   }
 
   /* Translate DM last message */
-  fun
+  function dmLastMsg(dm) {
+    if (_lang === 'en') return dm.lastMsg;
+    var tr = DM_LASTMSGS[dm.id];
+    return (tr && tr[_lang]) ? tr[_lang] : dm.lastMsg;
+  }
+
+  /* Translate DM role */
+  function dmRole(dm) {
+    if (_lang === 'en') return dm.role;
+    var tr = DM_ROLES[dm.id];
+    return (tr && tr[_lang]) ? tr[_lang] : dm.role;
+  }
+
+  /* Translate a chat message text */
+  function msgText(chatId, msg) {
+    if (_lang === 'en') return msg.text;
+    var chat = CHAT_MSGS[chatId];
+    if (!chat) return msg.text;
+    var tr = chat[msg.id];
+    return (tr && tr[_lang]) ? tr[_lang] : msg.text;
+  }
+
+  /* Translate a thread message */
+  function threadMsgText(threadKey, msg) {
+    if (_lang === 'en') return msg.text;
+    var thread = THREAD_MSGS[threadKey];
+    if (!thread) return msg.text;
+    var tr = thread[msg.id];
+    return (tr && tr[_lang]) ? tr[_lang] : msg.text;
+  }
+
+  /* Translate settings label */
+  function settingLabel(label) {
+    if (_lang === 'en') return label;
+    var tr = SETTINGS_LABELS[label];
+    return (tr && tr[_lang]) ? tr[_lang] : label;
+  }
+
+  /* Get AI draft text */
+  function aiDraft(topic) {
+    var drafts = AI_DRAFTS_I18N[_lang] || AI_DRAFTS_I18N.en;
+    return drafts[topic] || drafts.default;
+  }
+
+  /* Interpolate {n} and {u} in translated strings */
+  function tf(key, vars) {
+    var s = t(key);
+    if (vars) {
+      Object.keys(vars).forEach(function (k) {
+        s = s.replace('{' + k + '}', vars[k]);
+      });
+    }
+    return s;
+  }
+
+  /* Build the language switcher HTML (shared by web & PWA) */
+  function langSwitcherHTML() {
+    var langs = [
+      { code: 'en', label: 'EN', flag: '🇬🇧' },
+      { code: 'kk', label: 'KZ', flag: '🇰🇿' },
+      { code: 'ru', label: 'RU', flag: '🇷🇺' }
+    ];
+    return '<div class="lang-switcher">' +
+      '<span class="lang-switcher-label">' + t('lang_label') + ':</span>' +
+      langs.map(function (l) {
+        var active = l.code === _lang;
+        return '<button class="lang-btn' + (active ? ' active' : '') + '" data-action="setLang" data-lang="' + l.code + '">' +
+          l.flag + ' ' + l.label +
+        '</button>';
+      }).join('') +
+    '</div>';
+  }
+
+  /* Walk the DOM and update every element with data-i18n / data-i18n-ph */
+  function applyI18n() {
+    // text content
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      var val = t(key);
+      if (val !== key) el.textContent = val;
+    });
+    // placeholder attributes
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-ph');
+      var val = t(key);
+      if (val !== key) el.placeholder = val;
+    });
+    // title attributes
+    document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-title');
+      var val = t(key);
+      if (val !== key) el.title = val;
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     EXPORT
+  ═══════════════════════════════════════════════════════════════ */
+  window.CopilotI18n = {
+    t: t,
+    tf: tf,
+    setLang: setLang,
+    getLang: getLang,
+    dates: dates,
+    taskTitle: taskTitle,
+    dept: dept,
+    channelLastMsg: channelLastMsg,
+    dmLastMsg: dmLastMsg,
+    dmRole: dmRole,
+    msgText: msgText,
+    threadMsgText: threadMsgText,
+    settingLabel: settingLabel,
+    aiDraft: aiDraft,
+    langSwitcherHTML: langSwitcherHTML,
+    applyI18n: applyI18n
+  };
+})();

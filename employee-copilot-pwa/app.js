@@ -734,4 +734,14 @@
       if (state.activeThread)      { setState({activeThread:null});       return; }
       if (state.showAgentPanel)    { setState({showAgentPanel:false});    return; }
       if (state.showNotifPanel)    { setState({showNotifPanel:false});    return; }
-      if (state.showAddShe
+      if (state.showAddSheet)      { setState({showAddSheet:false});      return; }
+      if (state.activeTask)        { setState({activeTask:null});         return; }
+      if (state.activeChat)        { setState({activeChat:null,stagedFiles:[]}); renderFileStrip(); }
+    }
+  });
+
+  /* init */
+  loadPersisted();
+  render();
+  if ('serviceWorker' in navigator) window.addEventListener('load', function() { navigator.serviceWorker.register('service-worker.js').catch(function(){}); });
+})();

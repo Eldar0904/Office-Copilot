@@ -1854,4 +1854,73 @@
       }
       var dd = document.getElementById('searchDropdown');
       if (dd && !dd.classList.contains('hidden')) { closeSearch(); return; }
-      if (state.activeThread) { setState({ activeThread: nul
+      if (state.activeThread) { setState({ activeThread: null }); return; }
+      if (state.activeTask) setState({ activeTask: null });
+      else if (state.showQuickAdd) setState({ showQuickAdd: false });
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    if (e.target && (e.target.id === 'chatInput' || e.target.id === 'threadInput')) {
+      e.target.style.height = '';
+      e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+    }
+    if (e.target && e.target.id === 'searchInput') {
+      runSearch(e.target.value);
+    }
+  });
+
+  // Close search dropdown and notif panel on outside click
+  document.addEventListener('click', function (e) {
+    var wrap = document.getElementById('searchWrap');
+    if (wrap && !wrap.contains(e.target)) {
+      var dd = document.getElementById('searchDropdown');
+      if (dd) dd.classList.add('hidden');
+    }
+    var nbw = document.getElementById('notifPanel');
+    var bell = document.querySelector('.notif-bell-wrap');
+    if (nbw && bell && !bell.contains(e.target)) {
+      nbw.classList.add('hidden');
+    }
+  }, true);
+
+
+  // File input change
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.id === 'fileInput') {
+      stageFiles(e.target.files);
+      e.target.value = ''; // reset so same file can be picked again
+    }
+  });
+
+  // Drag-and-drop onto main content
+  document.addEventListener('dragover', function (e) {
+    if (!state.activeChat) return;
+    e.preventDefault();
+    var mc = document.getElementById('mainContent');
+    if (mc) mc.classList.add('drag-over');
+  });
+
+  document.addEventListener('dragleave', function (e) {
+    var mc = document.getElementById('mainContent');
+    if (mc && !mc.contains(e.relatedTarget)) mc.classList.remove('drag-over');
+  });
+
+  document.addEventListener('drop', function (e) {
+    var mc = document.getElementById('mainContent');
+    if (mc) mc.classList.remove('drag-over');
+    if (!state.activeChat) return;
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files.length) {
+      stageFiles(e.dataTransfer.files);
+    }
+  });
+
+
+  /* init */
+
+  loadPersisted();
+  render();
+  initSearch();
+  initNotifications();
+})();
