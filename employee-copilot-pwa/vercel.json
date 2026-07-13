@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/employee-copilot-pwa/:path*", "destination": "/:path*" },
+    { "source": "/pwa/service-worker.js",        "destination": "/service-worker.js" },
+    { "source": "/pwa",                           "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/agent.js": { "maxDuration": 30 },
+    "api/tts.js":   { "maxDuration": 30 }
+  }
+}

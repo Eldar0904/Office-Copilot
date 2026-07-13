@@ -6,8 +6,4 @@
     { "source": "/web",        "destination": "/employee-copilot-web/index.html" },
     { "source": "/",           "destination": "/index.html" }
   ],
-  "functions": {
-    "api/agent.js": { "maxDuration": 30 },
-    "api/tts.js":   { "maxDuration": 30 }
-  }
-}
+ 
