@@ -1342,6 +1342,8 @@
     renderDetailPanel();
     renderThreadPanel();
     renderAIPanel();
+    var ls = document.getElementById('langSwitcher');
+    if (ls) ls.innerHTML = CI.langSwitcherHTML();
   }
 
   /* ───────────────────────── search ───────────────────────── */
