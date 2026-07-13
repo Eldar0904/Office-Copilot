@@ -52,17 +52,33 @@
   /* ───────────────────────── voice recording ───────────────────────── */
 
   var recInterval = null;
+  var _mediaRecorder = null;
+  var _recChunks = [];
+  var _recStream = null;
 
   function startRecording() {
-    state.isRecording = true;
-    state.recSeconds  = 0;
-    updateVoiceUI();
-    recInterval = setInterval(function () {
-      state.recSeconds++;
-      var t = document.getElementById('recTimer');
-      if (t) t.textContent = Math.floor(state.recSeconds / 60) + ':' + ('0' + (state.recSeconds % 60)).slice(-2);
-      animateWave();
-    }, 1000);
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function (stream) {
+        _recStream = stream;
+        _recChunks = [];
+        _mediaRecorder = new MediaRecorder(stream);
+        _mediaRecorder.ondataavailable = function (e) {
+          if (e.data && e.data.size > 0) _recChunks.push(e.data);
+        };
+        _mediaRecorder.start(100);
+        state.isRecording = true;
+        state.recSeconds  = 0;
+        updateVoiceUI();
+        recInterval = setInterval(function () {
+          state.recSeconds++;
+          var t = document.getElementById('recTimer');
+          if (t) t.textContent = Math.floor(state.recSeconds / 60) + ':' + ('0' + (state.recSeconds % 60)).slice(-2);
+          animateWave();
+        }, 1000);
+      })
+      .catch(function () {
+        alert('Microphone access denied. Please allow mic access in your browser.');
+      });
   }
 
   function stopRecording(send) {
@@ -72,25 +88,42 @@
     state.isRecording = false;
     state.recSeconds  = 0;
     updateVoiceUI();
-    if (send && state.activeChat && dur > 0) {
-      var voiceMsg = {
-        id: Date.now(),
-        sender: ME.name,
-        initials: ME.initials,
-        avatarBg: ME.avatarBg,
-        text: '',
-        isVoice: true,
-        voiceDuration: dur,
-        mine: true,
-        time: nowTime()
-      };
-      var existing = (state.chatMessages[state.activeChat.id] || []).slice();
-      existing.push(voiceMsg);
-      var updated = Object.assign({}, state.chatMessages);
-      updated[state.activeChat.id] = existing;
-      state.chatMessages = updated;
-      refreshChatMessages(state.activeChat.id);
-    }
+
+    if (!_mediaRecorder) return;
+
+    _mediaRecorder.onstop = function () {
+      if (send && state.activeChat && dur > 0 && _recChunks.length > 0) {
+        var blob = new Blob(_recChunks, { type: _mediaRecorder.mimeType || 'audio/webm' });
+        var reader = new FileReader();
+        reader.onloadend = function () {
+          var voiceMsg = {
+            id: Date.now(),
+            sender: ME.name,
+            initials: ME.initials,
+            avatarBg: ME.avatarBg,
+            text: '',
+            isVoice: true,
+            voiceDuration: dur,
+            audioSrc: reader.result,   // base64 data URL — survives localStorage
+            mine: true,
+            time: nowTime()
+          };
+          var existing = (state.chatMessages[state.activeChat.id] || []).slice();
+          existing.push(voiceMsg);
+          var updated = Object.assign({}, state.chatMessages);
+          updated[state.activeChat.id] = existing;
+          state.chatMessages = updated;
+          persist();
+          refreshChatMessages(state.activeChat.id);
+        };
+        reader.readAsDataURL(blob);
+      }
+      _recChunks = [];
+      if (_recStream) { _recStream.getTracks().forEach(function(t){ t.stop(); }); _recStream = null; }
+      _mediaRecorder = null;
+    };
+
+    if (_mediaRecorder.state !== 'inactive') _mediaRecorder.stop();
   }
 
   function updateVoiceUI() {
@@ -760,8 +793,9 @@
 
     var bodyHTML;
     if (msg.isVoice) {
+      var audioAttr = msg.audioSrc ? ' data-audio-src="' + msg.audioSrc + '"' : '';
       bodyHTML = '<div class="voice-note-card">' +
-        '<button class="voice-play-btn" title="Play">' +
+        '<button class="voice-play-btn" data-action="playVoiceMsg"' + audioAttr + ' title="Play">' +
           '<svg width="10" height="12" viewBox="0 0 10 12" fill="none"><path d="M1 1L9 6L1 11V1Z" fill="currentColor"/></svg>' +
         '</button>' +
         '<div class="voice-note-wave">' +
@@ -950,7 +984,7 @@
      VOICE AGENT
   ═══════════════════════════════════════════════════════════════ */
 
-  var AGENT_SERVER = 'http://localhost:3001';
+  var AGENT_SERVER = '/api';
   var agentSessionId = 'session_' + Date.now();
 
   // Add to state
@@ -1594,6 +1628,14 @@
       case 'sendVoiceMsg':
         stopRecording(true);
         break;
+
+      case 'playVoiceMsg': {
+        var src = actionEl.dataset.audioSrc;
+        if (!src) { alert('No audio data — this message was recorded before audio capture was enabled.'); break; }
+        var a = new Audio(src);
+        a.play().catch(function(err) { console.warn('Playback failed:', err); });
+        break;
+      }
 
       case 'triggerFileInput': {
         var fi = document.getElementById('fileInput');

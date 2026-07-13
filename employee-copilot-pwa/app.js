@@ -13,7 +13,7 @@
   var fmtRange = CD.fmtRange;
   var esc = CD.esc;
   var ME = { name: 'Sara Ahmed', initials: 'SA', avatarBg: '#0b5389' };
-  var AGENT_SERVER = 'http://localhost:3001';
+  var AGENT_SERVER = '/api';
 
   /* ── state ── */
   var state = {
