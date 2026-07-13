@@ -1137,7 +1137,7 @@
     })
     .catch(function (err) {
       state.agentThinking = false;
-      state.agentMessages.push({ role: 'error', text: 'Could not reach agent server. Make sure it is running on localhost:3001.' });
+      state.agentMessages.push({ role: 'error', text: 'Could not reach the AI agent. Check your API keys in Vercel settings and redeploy.' });
       updateOrbUI();
       renderAgentMessages();
     });
