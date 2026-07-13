@@ -298,30 +298,45 @@
     if (status) status.textContent = state.agentListening ? CI.t('agent_listening') : state.agentSpeaking ? CI.t('agent_speaking') : state.agentThinking ? CI.t('agent_thinking') : CI.t('agent_tap_speak');
   }
 
+  function makePwaRecognition() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return null;
+    var r = new SR();
+    r.continuous = false;
+    r.interimResults = false;
+    r.lang = CI.getLang() === 'ru' ? 'ru-RU' : CI.getLang() === 'kk' ? 'kk-KZ' : 'en-US';
+    r.onresult = function(ev) {
+      var transcript = (ev.results[0][0].transcript || '').trim();
+      if (!transcript) return;
+      state.agentListening = false; updateAgentUI();
+      _recognition = null;
+      sendAgentMessage(transcript, true);
+    };
+    r.onerror = function(ev) {
+      if (ev.error === 'no-speech' || ev.error === 'aborted') return;
+      state.agentListening = false; updateAgentUI(); _recognition = null;
+    };
+    r.onend = function() {
+      if (state.agentListening) {
+        _recognition = makePwaRecognition();
+        if (_recognition) { try { _recognition.start(); } catch(e) { state.agentListening = false; updateAgentUI(); } }
+      } else { updateAgentUI(); }
+    };
+    return r;
+  }
+
   function toggleAgentMic() {
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { alert('Voice not supported. Please type instead.'); return; }
     if (state.agentListening) {
-      if (_recognition) _recognition.stop();
-      state.agentListening = false; updateAgentUI(); return;
+      state.agentListening = false;
+      if (_recognition) { try { _recognition.stop(); } catch(_){} _recognition = null; }
+      updateAgentUI();
+    } else {
+      state.agentListening = true; updateAgentUI();
+      _recognition = makePwaRecognition();
+      if (_recognition) { try { _recognition.start(); } catch(e) { state.agentListening = false; updateAgentUI(); } }
     }
-    _recognition = new SR();
-    _recognition.lang = CI.getLang() === 'ru' ? 'ru-RU' : CI.getLang() === 'kk' ? 'kk-KZ' : 'en-US';
-    _recognition.continuous = true; _recognition.interimResults = false; _recognition.maxAlternatives = 1;
-    _recognition.onstart  = function() { state.agentListening = true; updateAgentUI(); };
-    _recognition.onresult = function(ev) {
-      var transcript = ev.results[ev.results.length - 1][0].transcript.trim();
-      if (!transcript) return;
-      _recognition.stop();
-      state.agentListening = false; updateAgentUI();
-      sendAgentMessage(transcript, true);
-    };
-    _recognition.onerror = function(ev) {
-      if (ev.error === 'no-speech') { if (state.agentListening) { try { _recognition.start(); } catch(_){} } return; }
-      state.agentListening = false; updateAgentUI();
-    };
-    _recognition.onend = function() { if (!state.agentListening) updateAgentUI(); };
-    _recognition.start();
   }
 
   /* ── chat message rendering ── */

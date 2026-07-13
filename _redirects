@@ -1,0 +1,7 @@
+/api/agent  /api/agent.js  200
+/api/tts    /api/tts.js    200
+/pwa/*      /employee-copilot-pwa/:splat  200
+/pwa        /employee-copilot-pwa/index.html  200
+/web/*      /employee-copilot-web/:splat  200
+/web        /employee-copilot-web/index.html  200
+/           /index.html  200

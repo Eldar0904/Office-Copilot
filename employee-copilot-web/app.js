@@ -997,36 +997,49 @@
   state.agentSpeaking   = false;
 
   /* ── Speech Recognition ── */
-  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var recognition = SpeechRecognition ? new SpeechRecognition() : null;
-  if (recognition) {
-    recognition.continuous = true;   // stay open — don't drop on silence
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognition = null;
 
-    recognition.onresult = function (e) {
-      // grab the latest final result
-      var transcript = e.results[e.results.length - 1][0].transcript.trim();
+  function makeRecognition() {
+    if (!SR) return null;
+    var r = new SR();
+    r.continuous = false;      // false + manual restart = most reliable cross-browser
+    r.interimResults = false;
+    r.lang = CI.getLang() === 'ru' ? 'ru-RU' : CI.getLang() === 'kk' ? 'kk-KZ' : 'en-US';
+
+    r.onresult = function (e) {
+      var transcript = (e.results[0][0].transcript || '').trim();
       if (!transcript) return;
-      // stop listening while agent thinks / speaks
-      recognition.stop();
       state.agentListening = false;
       updateOrbUI();
-      sendAgentMessage(transcript, true);  // voice in → speak back
+      recognition = null;
+      sendAgentMessage(transcript, true);
     };
-    recognition.onerror = function (e) {
-      if (e.error === 'no-speech') {
-        // browser timed out with no speech — restart if still meant to listen
-        if (state.agentListening) { try { recognition.start(); } catch(_){} }
-        return;
+
+    r.onerror = function (e) {
+      // no-speech = silence timeout; aborted = we stopped it; both are fine
+      if (e.error === 'no-speech' || e.error === 'aborted') return;
+      state.agentListening = false;
+      updateOrbUI();
+      recognition = null;
+    };
+
+    r.onend = function () {
+      // If still in listening mode, create a fresh instance and restart
+      if (state.agentListening) {
+        recognition = makeRecognition();
+        if (recognition) {
+          try { recognition.start(); } catch (_) {
+            state.agentListening = false;
+            updateOrbUI();
+          }
+        }
+      } else {
+        updateOrbUI();
       }
-      state.agentListening = false;
-      updateOrbUI();
     };
-    recognition.onend = function () {
-      // only update UI if we didn't intentionally stop
-      if (!state.agentListening) updateOrbUI();
-    };
+
+    return r;
   }
 
   /* ── Text-to-Speech — ElevenLabs via agent server ── */
@@ -1238,19 +1251,20 @@
 
   /* ── Toggle orb mic ── */
   function toggleAgentMic() {
-    if (!recognition) { document.getElementById('agentTextInput') && document.getElementById('agentTextInput').focus(); return; }
+    if (!SR) { var ti = document.getElementById('agentTextInput'); if (ti) ti.focus(); return; }
     if (state.agentListening) {
-      recognition.stop();
       state.agentListening = false;
+      if (recognition) { try { recognition.stop(); } catch(_){} recognition = null; }
+      updateOrbUI();
     } else {
       window.speechSynthesis && window.speechSynthesis.cancel();
       if (_currentAudio) { _currentAudio.pause(); _currentAudio = null; }
       state.agentSpeaking = false;
-      recognition.lang = CI.getLang() === 'ru' ? 'ru-RU' : CI.getLang() === 'kk' ? 'kk-KZ' : 'en-US';
-      recognition.start();
       state.agentListening = true;
+      updateOrbUI();
+      recognition = makeRecognition();
+      if (recognition) { try { recognition.start(); } catch(e) { state.agentListening = false; updateOrbUI(); } }
     }
-    updateOrbUI();
   }
 
 
